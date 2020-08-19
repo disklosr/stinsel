@@ -1,0 +1,58 @@
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+
+  websecure:
+    address: ":443"
+    http:
+      tls:
+        certresolver: le
+        domains:
+          - main: "*.{{domain_name}}"
+            sans:
+              - "{{domain_name}}"
+      middlewares:
+        - "{{traefik_auth_middleware_name}}"
+
+providers:
+  providersThrottleDuration: 5s
+  docker:
+    endpoint: "unix:///var/run/docker.sock"
+    network: "{{docker_custom_network}}"
+    exposedByDefault: false
+
+api:
+  dashboard: true
+
+accessLog:
+  filepath: "/data/access.log"
+  fields:
+    headers:
+      defaultMode: drop
+      names:
+        User-Agent: keep
+        Content-Type: keep
+  
+log:
+  level: INFO
+
+
+certificatesResolvers:
+  le:
+    acme:
+      email: "{{acme_email}}" #Used for certificate expiry notification. Optional
+      storage: /data/acme.json
+      #caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+{% if letsencrypt_challenge_type == 'http' %}
+      httpChallenge:
+        entryPoint: web
+{% endif %}
+{% if letsencrypt_challenge_type == 'dns' %}
+      dnsChallenge:
+        provider: cloudflare
+{% endif %}

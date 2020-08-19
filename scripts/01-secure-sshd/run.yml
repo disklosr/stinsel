@@ -1,0 +1,70 @@
+# Inspired by https://gist.github.com/cmavr8/eb4a9e596bd0e3e85f97d907de288c54
+
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+
+  vars:
+    ansible_port: 22
+    sshd_config_file_location: "/etc/ssh/sshd_config"
+
+  tasks:
+    - name: Use ssh protocol version 2
+      lineinfile: 
+        dest:  "{{sshd_config_file_location}}" 
+        regexp:  '^Protocol 2' 
+        line: 'Protocol 2'
+ 
+    - name: Disable password based logins.
+      lineinfile: 
+        dest: "{{sshd_config_file_location}}" 
+        regexp: '^#?AuthenticationMethods' 
+        line: 'AuthenticationMethods publickey'
+    - lineinfile: 
+        dest: "{{sshd_config_file_location}}" 
+        regexp: '^#?PasswordAuthentication' 
+        line: 'PasswordAuthentication no'
+    - lineinfile: 
+        dest: "{{sshd_config_file_location}}" 
+        regexp: '^#?ChallengeResponseAuthentication' 
+        line: 'ChallengeResponseAuthentication no'
+    - lineinfile: 
+        dest: "{{sshd_config_file_location}}" 
+        regexp: '^#?PubkeyAuthentication' 
+        line: 'PubkeyAuthentication yes'   
+      
+    - name: LogLevel VERBOSE logs user's key fingerprint on login. Needed to have a clear audit track of which key was using to log in.
+      lineinfile: 
+        dest: "{{sshd_config_file_location}}" 
+        regexp: '^LogLevel' 
+        line: 'LogLevel VERBOSE'
+ 
+    # Root login is not allowed for auditing reasons. This is because it's difficult to track which process belongs to which root user
+    # On Linux, user sessions are tracking using a kernel-side session id, however, this session id is not recorded by OpenSSH.
+    # Additionally, only tools such as systemd and auditd record the process session id.
+    # On other OSes, the user session id is not necessarily recorded at all kernel-side.
+    # Using regular users in combination with /bin/su or /usr/bin/sudo ensure a clear audit track.
+    - name: disable root login
+      lineinfile: 
+        dest: "{{sshd_config_file_location}}" 
+        regexp: '^PermitRootLogin' 
+        line: 'PermitRootLogin No'
+
+    
+    - name: Only allow specific users to login remotely (may be more suitable to change this to AllowGroups).
+      lineinfile: 
+        dest: "{{sshd_config_file_location}}"
+        regexp: '^AllowUsers' 
+        line: "AllowUsers {{admin_username}}"
+
+    - name: Change default ssh port
+      lineinfile: 
+        dest: "{{sshd_config_file_location}}"
+        regexp: '^Port' 
+        line: "Port {{custom_ssh_port}}"
+
+    - name: Restart sshd
+      service:
+        name: sshd
+        state: restarted

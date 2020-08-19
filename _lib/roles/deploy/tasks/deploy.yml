@@ -1,0 +1,38 @@
+# This role is simple wrapper over "docker_container" module:
+# * It centralizes common container properties with some safe default
+# * It works around Ansible's inability to template dictionary keys
+
+- name: Prepare deployment
+  include_tasks: prepare.yml
+  when: pre_deploy is not defined
+
+- name: Pull image {{image}}
+  docker_image:
+    name: "{{image}}"
+    source: pull
+    force_source: yes
+
+- name: "Run container {{container_id}}"
+  vars:
+    full_labels: |
+      {{labels | default('')}}
+      "stinsel.stack.id": "{{stack_id}}"
+      "stinsel.stack.basedir": "{{stack_base_dir}}"
+  docker_container:
+    name: "{{container_id}}"
+    recreate: true
+    restart_policy: unless-stopped
+    purge_networks: true
+    networks_cli_compatible: yes
+    command: "{{command | default(omit) }}"
+    image: "{{ image }}"
+    pid_mode: "{{ pid_mode | default(omit) }}"
+    tty: "{{tty | default(omit)}}"
+    published_ports: "{{ ports | default(omit) }}"
+    volumes: "{{volumes | default(omit) }}"
+    labels: "{{full_labels | from_yaml }}" # Workaround to enable templating docker labels
+    env: "{{env | default(omit) }}"
+    env_file: "{{env_file | default(omit) }}"
+    networks:
+      - name: "{{docker_custom_network}}"
+        aliases: "{{network_alias | default(omit)}}"

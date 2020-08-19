@@ -1,0 +1,52 @@
+all:
+  vars:
+    #####
+    # Core variables
+    #####
+
+    # Name of the custom docker network to be used by containers managed by Stinsel
+    docker_custom_network: traefik-network
+
+    # Default values for some global internal vars
+    stack_id: "{{playbook_dir | basename}}"
+    container_id: "{{stack_id}}-{{role_id | mandatory}}"
+    role_subdomain: "{{stack_id}}" #TODO: This might not be needed
+    role_url: "{{role_subdomain}}.{{ domain_name }}"
+
+    # Directory of a stack
+    stack_base_dir: "{{stinsel_root_dir}}/{{stack_id}}"
+
+    # Target location of 'data', 'conf' and 'meta' folder for a given stack
+    data_dir: "{{stack_base_dir}}/data"
+    conf_dir: "{{stack_base_dir}}/conf"
+    meta_dir: "{{stack_base_dir}}/meta"
+
+
+    #####
+    # User variables
+    #####
+
+    # Base directory where stacks will be deployed in target server
+    # Do not change after you've done your first deployment as it can have unwanted consequences
+    stinsel_root_dir: "/stinsel"
+
+
+
+    # List of ssh public keys to be installed inside all managed servers. Required
+    authorized_keys:
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDMgrwqz0kCAimr8O3F6YuMPgHBYjDv2QQuv+ooHElIBm65bazTRBgfQZUv95EUpKYIqijy817iuife+ucLJIdHi17rGTU3ieaIpPxG3O3TShuzrpZKBakgbO8D2eawCs4C3tPj91UnckN6VZdDq1VD8PW5C7V6Abay/GohNqT34EOZn8raaeZldLBDxwPGKF4YUhyKUPoLteWRasdWjtbwsgiFMsWwgEei4ncOXwXuqVgIU6kiviSEPR0enq0lSzgRHE0XkBxtE29l+rXpCNDc/Wb1VwOvNaIB7Op94T/k+XypvnH5QZTNGM1t82P9FY3OVJHLluT/p2m+ap8lmbDWcPkLTnL0wxT0r10ctLK1GUHj5X8G7r1XaXHm2vK8Ci14DBBWGX2fKHicLNyG4YpFaXKjRYTAATYzp/ckfxCehHlZN+QTp8FDQpWInwdG27vZf47suuoWyAlF0G7Qs4zFdF4k8Z4gHloFCCEHWnPxz1rcs9VXmYuWgCYiBkUEoJJI9nKUTB3Jp78iNrw/97kmVV9uwOEtRTsr7eviVAZ4UNJ0wmmYrcLPSYVjfIAdqTn8GaWedZf8YxkOaSoSyQm1LSLWlAOISC61+2gZUI7/Va5/u/iJvTabaxXUgNODaZN7i5699qLdSXVzsWMF4siIEk6AnBQzaBL+Qr2p2ippEw== xps"
+      - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDEo+Aus5tlP7lYXWi80AZhgC0AHUGmbsu6yZ/hLuJp71IA9TaE3DF52w6GzsySdZJD7kN10+28baPpHH4Djhd46PxeAVIIKzANP8WCfI646Ik66orNyRN1HV6p5YkWUc5a7dg+1e5d4ZCsyNjVL/dW8wrhyR+u5vadaG9UlUZpPZQ15L2LbNFF22dAlDArt0MRsudyXByA9BmFFBvwXcZDOuiWm6+yJAHzxn34y8vnTqA5ChH4vrYL9kZtz9Avss2tThVRvT1Fk0GyhYQznIBS+OfZNkSdwn2xt48BNQR4iZ1w5wMFP/B6aL/lMrxXrMHjjQwmaHX/BjZttzFJJj1klNsgVjlnZqrjI9qAAUGPDIv7kT09iTCRqPtAOJCjl67lUTWuu+1Wrf3f7kOZ9EvpWmUYTH9YT5x+gaakFNWsyeBxysbGA6m8tyGKL121WyTdlD6VdDcJMi+XHBjDVTFOACyWee/YrKoeuPGznCL3rdIj2OeWggtAECzTFUzKG/Uxmq8IokcwvCC//XcXIrhcOd0kIwGj9MPtDYhlrevWUi4sqxfwvJpgNrk+9hMopIWPUAKQjQe3vCSYeZ6KYdyeVWnLtCWtByjvRBS9TEBSSoUyT90K94CNe0uhFhPHYjN6GuKDAgtRqWtNvHAhohizMGoOrznMTiz4GJbwm5PIdQ== fletchling"
+
+    # Packages you add here will be automatically installed on all your managed servers during step 3 of sysadmin scripts
+    additional_sys_packages:
+      - curl
+      - aptitude
+
+    host_stacks: []
+
+    # Ansible connection vars
+    ansible_port: "{{custom_ssh_port}}"
+    ansible_python_interpreter: /usr/bin/python3
+    ansible_host: "{{ domain_name }}"
+    ansible_user: "{{ admin_username }}"
+    ansible_become_pass: "{{ admin_password }}"

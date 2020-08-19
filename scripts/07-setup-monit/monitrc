@@ -1,0 +1,33 @@
+set daemon 60
+set log /var/log/monit.log
+
+set httpd unixsocket /var/run/monit.sock
+  gid wheel
+  allow anas:anas
+
+# set httpd port 2812 and
+#     use address localhost
+#     allow localhost
+#     allow anas:anas
+
+check process Docker with pidfile /var/run/docker.pid
+  start program = "/usr/bin/systemctl start docker"
+  stop program = "/usr/bin/systemctl stop docker"
+  if total memory > 100 MB for 5 cycles then exec {{alert_command}}
+    else if succeeded then exec {{alert_command}}
+
+check system SystemMemory
+  if memory usage > 80% then exec {{alert_command}}
+    else if succeeded then exec {{alert_command}} 
+
+check host Google.com with address google.com
+  if failed port 443 protocol https then exec {{alert_command}}
+    else if succeeded then exec {{alert_command}} 
+
+check host Nuc with address echo.nuc.disklosr.com
+  if failed port 443 protocol https then exec {{alert_command}}
+    else if succeeded then exec {{alert_command}}
+
+check host Nimobi.fr with address nimobi.fr
+  if failed port 443 protocol https then exec {{alert_command}}
+    else if succeeded then exec {{alert_command}}

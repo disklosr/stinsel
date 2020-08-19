@@ -1,0 +1,15 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: deploy
+      vars:
+        image: containous/whoami
+        role_id: web
+        role_subdomain: echo
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"    

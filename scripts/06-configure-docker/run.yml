@@ -1,0 +1,16 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+  tasks:
+    - name: Copy docker config file
+      copy:
+        src: daemon.json
+        dest: /etc/docker/
+
+    - name: Reload docker service
+      systemd:
+        name: docker
+        state: restarted
+        daemon_reload: yes

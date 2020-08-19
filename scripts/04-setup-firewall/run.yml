@@ -1,0 +1,33 @@
+# WARN: Be aware that Docker published ports will bypass ufw rules.
+# This is a known issue that has no known clean workaround as of today
+# When reasoning about open ports, take into consideration ports which
+# are allowed through ufw, as well as published ports through Docker
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+  
+  tasks:
+    - name: Deny all incoming by default
+      ufw: 
+        policy: deny
+        direction: incoming
+
+    - name: Allow all outgoing connections
+      ufw: 
+        policy: allow
+        direction: outgoing 
+
+    - name: Allow ssh incoming connections
+      ufw: 
+        rule: allow 
+        port: "{{custom_ssh_port}}"
+        proto: tcp
+
+    - name: Enable ufw service
+      ufw: state=enabled
+
+
+
+

@@ -1,0 +1,19 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: deploy
+      vars:
+        image: n8nio/n8n:0.75.0
+        role_id: web
+        role_subdomain: n8n
+        env:
+          TZ: "Europe/Paris"
+        volumes:
+          - "{{data_dir}}:/root/.n8n"
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"

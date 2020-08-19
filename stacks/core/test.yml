@@ -1,0 +1,26 @@
+---
+- hosts: "{{target}}"
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: test
+      vars:
+        test_item: "{{item}}"
+      with_items:
+        # Should auto redirect to https
+        - url: "http://auth.{{domain_name}}"
+          expect_status: 301
+
+        # Non existing url
+        - url: "https://nonexisting.{{domain_name}}"
+          expect_status: 404 
+
+        # Should respond with 200 OK
+        - url: "https://auth.{{domain_name}}"
+          expect_status: 200 
+        
+        # Should respond with 200 OK
+        - url: "https://traefik.{{domain_name}}/api/overview"
+          expect_status: 200 
+          authenticate: true

@@ -1,0 +1,16 @@
+---
+- hosts: "{{target}}"
+  gather_facts: no
+  
+
+  tasks:
+    - name: Copy zshrc config files
+      copy:
+        src: ".zshrc"
+        dest: /home/{{admin_username}}/.zshrc
+
+    - name: Set shell to zsh
+      become: true
+      user:
+        name: "{{admin_username}}"
+        shell: /bin/zsh

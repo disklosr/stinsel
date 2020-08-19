@@ -1,0 +1,53 @@
+# This role copies local 'conf' and 'data' folders to target host
+# All files immediately inside './conf' folder ==> {{conf_dir}} (as defined at inventory level)
+# Everything inside './data' folder ==> {{data_dir}} (as defined at inventory levels)
+
+- name: Load secret_vars file if it exists
+  include_vars:
+    dir: "{{playbook_dir}}"
+    files_matching: "secure_vars.yml"
+
+- name: Ensure 'data' and 'conf' folders exist on target
+  file:
+    path: "{{item}}"
+    state: directory
+  with_items:
+    - "{{data_dir}}"
+    - "{{conf_dir}}"
+
+- name: Recursively mirror content of 'data' folder to target
+  vars:
+    dir: "{{playbook_dir}}/data/"
+  copy:
+    src: "{{dir}}"
+    dest: "{{data_dir}}"
+    mode: "600"
+    force: no # Don't overwrite already existing files
+  when: dir is directory
+
+- name: Recursively mirror content of 'conf' folder to target
+  vars:
+    dir: "{{playbook_dir}}/conf/"
+  copy:
+    src: "{{dir}}"
+    dest: "{{conf_dir}}"
+    mode: "600"
+    force: no # Don't overwrite already existing files
+  when: dir is directory
+
+- name: Template then copy all config files to remote server
+  template:
+    src: "{{ item.src }}"
+    dest: "{{conf_dir}}/{{ item.path }}"
+    mode: "600"
+  with_filetree: conf/
+  when: item.state == "file"
+
+- name: Ensure docker network is present
+  docker_network: 
+    name: "{{docker_custom_network}}"
+    state: present
+
+- name: Mark pre_deploy as run
+  set_fact:
+    pre_deploy: run

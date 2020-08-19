@@ -1,0 +1,7 @@
+- name: Destroy stack
+  include_tasks: destroy.yml
+  when: state == 'absent'
+
+- name: Deploy stack
+  include_tasks: deploy.yml
+  when: state == 'started' or state == 'stopped'

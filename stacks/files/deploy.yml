@@ -1,0 +1,53 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+
+  tasks:
+    - include_role:
+        name: prepare
+
+    - include_role:
+        name: deploy
+      vars:
+        image: caddy:2
+        role_id: web
+        volumes:
+          - "{{data_dir}}/public:/public"
+          - "{{data_dir}}/private:/private"
+          - "{{conf_dir}}/caddy.conf:/etc/caddy/Caddyfile"
+        labels: |
+          "traefik.enable": "true"
+          
+          # Private folder
+          "traefik.http.routers.{{container_id}}-private.tls": "true"
+          "traefik.http.routers.{{container_id}}-private.rule": "Host(`private.{{ domain_name }}`)"
+          "traefik.http.routers.{{container_id}}-private.service": "{{container_id}}-private"
+          "traefik.http.services.{{container_id}}-private.loadbalancer.server.port": "80"
+
+          # Public folder
+          "traefik.http.routers.{{container_id}}-public.tls": "true"
+          "traefik.http.routers.{{container_id}}-public.rule": "Host(`public.{{ domain_name }}`)"
+          "traefik.http.routers.{{container_id}}-public.service": "{{container_id}}-public"
+          "traefik.http.services.{{container_id}}-public.loadbalancer.server.port": "81"
+
+
+    - include_role:
+        name: test
+      tags: test
+      vars:
+        test_item: "{{item}}"
+      with_items:
+        # Should access public folder without authentication
+        - url: "https://public.{{domain_name}}/public.txt"
+          expect_status: 200
+
+        # Disallow access to private folder when not authenticated
+        - url: "https://private.{{domain_name}}"
+          expect_status: 302 
+
+        # Allow access to private folder when authenticated
+        - url: "https://private.{{domain_name}}"
+          expect_status: 200
+          authenticate: true      

@@ -1,0 +1,8 @@
+users:
+  {{admin_username}}:
+    # Generate using 'argon2 aaaaaaaa -id -t 1 -m 6 -p 8 somepassword (password is read from stdin)'
+    # or docker run authelia/authelia:latest authelia hash-password --salt aaaaaaaa somepassword
+    displayname: {{admin_username}}
+    password: "{{admin_web_password | argon2_hash}}"
+    groups:
+      - admins

@@ -1,0 +1,18 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+  tasks:
+    - name: Update index
+      apt:
+        state: latest
+        update-cache: yes
+        cache_valid_time: 3600
+
+    - name: Update all packages
+      apt:
+        upgrade: safe
+
+
+

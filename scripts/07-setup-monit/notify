@@ -1,0 +1,6 @@
+#!/bin/bash
+echo $1
+curl --header "Content-Type: application/json" \
+     --request POST \
+     --data "{\"chat_id\": \"{{telegram_chat_id}}\", \"parse_mode\": \"html\",  \"text\": \"<b><u>{{inventory_hostname | capitalize}}:</u></b>\n\n$1\"}" \
+     -sS https://api.telegram.org/bot{{telegram_bot_token}}/sendMessage

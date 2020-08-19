@@ -1,0 +1,22 @@
+- name: Testing {{test_item.url}} 
+  tags: test
+  vars:
+    sso_credentials: "{{admin_username}}:{{admin_web_password}}"
+    auth_header: 
+      "Basic-Authorization": "Basic {{sso_credentials | b64encode}}"
+    no_header: {}
+  uri:
+    url: "{{test_item.url}}"
+    headers: "{{ test_item.authenticate | default(False) | ternary(auth_header, no_header, omit) }}"
+    status_code: "{{test_item.expect_status}}"
+    validate_certs: false
+    follow_redirects: none
+    timeout: "6"
+
+  delegate_to: localhost
+  register: result
+  retries: "{{retries | default(5)}}"
+  until: result.status == test_item.expect_status
+  delay: 3
+  become: false
+  ignore_errors: yes

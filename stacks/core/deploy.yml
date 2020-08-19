@@ -1,0 +1,72 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  vars:
+    authelia_network_alias: "authelia"
+    traefik_auth_middleware_name: "auth"
+    traefik_container_name: "{{stack_id}}-traefik"
+
+    #Use either 'http' or 'dns'
+    #'http' challenge will result in multiple per-subdomain certificate
+    #'dns' challenge will result in one single wildcard cetificate
+    letsencrypt_challenge_type: "dns"
+
+  tasks:    
+    - name: Deploy authelia SSO server
+      include_role:
+        name: deploy
+      vars:
+        image: authelia/authelia:4.21
+        role_id: authelia
+        network_alias: "{{authelia_network_alias}}"
+        volumes:
+          - "{{data_dir}}/authelia:/etc/authelia/data"
+          - "{{conf_dir}}/authelia/authelia_config.yml:/config/configuration.yml:ro"
+          - "{{conf_dir}}/authelia/authelia_users_db.yml:/etc/authelia/users_db.yml:ro"
+        labels: |
+          "traefik.enable": "false"
+
+    - name: deploy authelia SSO proxy
+      include_role:
+        name: deploy
+      vars:
+        image: nginx
+        role_id: sso-proxy
+        role_subdomain: auth
+        volumes:
+          - "{{conf_dir}}/authelia/authelia_nginx.conf:/etc/nginx/nginx.conf:ro"
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
+          "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.address": "http://{{container_id}}/api/verify?rd=https://{{role_url}}/"
+          "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.trustforwardheader": "true"
+          "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.authresponseheaders": "X-Forwarded-User"
+
+    - include_role:
+        name: deploy
+      vars:
+        image: traefik:v2.2
+        role_id: traefik
+        role_subdomain: "traefik"
+        env_file: "{{conf_dir}}/traefik/traefik_cloudflare.env"
+        ports:
+          - "80:80"
+          - "443:443"
+        volumes:
+          - /var/run/docker.sock:/var/run/docker.sock
+          - "{{conf_dir}}/traefik/traefik_config.yml:/etc/traefik/traefik.yaml:ro"
+          - "{{data_dir}}/traefik:/data"
+        labels: |
+          {% if letsencrypt_challenge_type == 'dns' %}
+          # Wildcard certificate
+          "traefik.http.routers.wildcard-cert.tls.certresolver": "le"
+          "traefik.http.routers.wildcard-cert.tls.domains[0].main": "{{ domain_name }}"
+          "traefik.http.routers.wildcard-cert.tls.domains[0].sans": "*.{{ domain_name }}"
+          {% endif %}
+
+          # Traefik dashboard
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
+          "traefik.http.routers.{{container_id}}.service": "api@internal"

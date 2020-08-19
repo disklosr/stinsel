@@ -1,0 +1,3 @@
+#!/bin/bash
+message="<b>Service</b>: $MONIT_SERVICE\n<b>Event</b>: $MONIT_EVENT\n<b>Description</b>: $MONIT_DESCRIPTION\n\n<i>$MONIT_DATE</i>"
+notify "$message"

@@ -1,0 +1,13 @@
+- name: Kill stack
+  script: kill-stack.sh {{stack_id}}
+  when: kill_stack is not defined
+
+- name: Mark "kill stack" step as run
+  set_fact:
+    kill_stack: run
+
+- name: "Ensure container {{container_id}} doesn't exist"
+  docker_container:
+    name: "{{container_id}}"
+    state: absent
+    keep_volumes: no

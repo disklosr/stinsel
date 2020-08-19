@@ -1,0 +1,1 @@
+state: "{{ (stack_id in host_stacks) | ternary('started', 'absent', 'absent') }}"

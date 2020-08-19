@@ -1,0 +1,14 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: test
+      tags: test
+      vars:
+        test_item:
+          url: "https://n8n.{{domain_name}}"
+          expect_status: 200
+          authenticate: true     
