@@ -4,6 +4,11 @@
   gather_facts: no
   
   tasks:
+    - name: Make sure stinsel group exists
+      group:
+        name: stinsel
+        state: present
+
     - name: Copy docker config file
       copy:
         src: daemon.json
