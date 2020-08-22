@@ -22,12 +22,4 @@ check system SystemMemory
 
 check host Google.com with address google.com
   if failed port 443 protocol https then exec {{alert_command}}
-    else if succeeded then exec {{alert_command}} 
-
-check host Nuc with address echo.nuc.disklosr.com
-  if failed port 443 protocol https then exec {{alert_command}}
-    else if succeeded then exec {{alert_command}}
-
-check host Nimobi.fr with address nimobi.fr
-  if failed port 443 protocol https then exec {{alert_command}}
     else if succeeded then exec {{alert_command}}
