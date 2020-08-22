@@ -131,10 +131,10 @@ session:
   secret: {{authelia_secret}}
 
   # The time in seconds before the cookie expires and session is reset.
-  expiration: 3600 # 1 hour
+  expiration: 1296000 # 15 Days
 
   # The inactivity time in seconds before the session is reset.
-  inactivity: 1200 # 20 minutes
+  # inactivity: 3600 # 1 hour
 
   # The domain to protect.
   # Note: the authenticator must also be in that domain. If empty, the cookie

@@ -44,6 +44,12 @@
           "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.trustforwardheader": "true"
           "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.authresponseheaders": "X-Forwarded-User"
 
+    - name: Set correct permissions on acme.json file
+      file:
+        dest: "{{data_dir}}/traefik/acme.json"
+        group: "stinsel"
+        mode: "600"
+
     - include_role:
         name: deploy
       vars:
