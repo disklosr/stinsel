@@ -1,0 +1,19 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: deploy
+      vars:
+        image: jupyter/tensorflow-notebook
+        role_id: web
+        env:
+          JUPYTER_ENABLE_LAB: "yes"
+        volumes:
+          - "{{data_dir}}/notebooks:/home/jovyan/files"
+          - "{{conf_dir}}/jupyter_notebook_config.py:/home/jovyan/jupyter_notebook_config.py"
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"

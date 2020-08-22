@@ -1,0 +1,14 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: test
+      tags: test
+      vars:
+        test_item:
+          url: "https://jupyter.{{domain_name}}/lab"
+          expect_status: 200
+          authenticate: true
