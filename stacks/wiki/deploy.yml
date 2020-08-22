@@ -13,7 +13,7 @@
         env:
           POSTGRES_DB: "{{stack_id}}"
           POSTGRES_USER: "{{stack_id}}"
-          POSTGRES_PASSWORD: "{{postgres_password}}"
+          POSTGRES_PASSWORD: "{{db_password}}"
         volumes:
           - "{{data_dir}}/postgres:/var/lib/postgresql/data"
 
