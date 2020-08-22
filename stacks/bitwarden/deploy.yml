@@ -16,12 +16,3 @@
         labels: |
           "traefik.enable": "true"
           "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
-
-    - include_role:
-        name: test
-      tags: test
-      vars:
-        test_item:
-          url: "https://{{role_url}}/alive"
-          expect_status: 200
-          authenticate: true   
