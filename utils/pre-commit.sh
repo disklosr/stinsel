@@ -1,9 +1,9 @@
 #!/bin/bash
 
-FILE_PATTERN="secret_*.yml"
+FILE_PATTERN="secure*.yml"
 ENCRYPTED_PATTERN="\$ANSIBLE_VAULT"
 
-find . -name "secure*.yml" | while IFS= read -r file; do
+find . -name "$FILE_PATTERN" | while IFS= read -r file; do
     echo $file
     if ! grep -q "^${ENCRYPTED_PATTERN}" $file; then
         echo "ERROR: Vault file $file is not encrypted. Commit cannot proceed"

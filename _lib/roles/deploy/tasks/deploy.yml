@@ -22,6 +22,7 @@
     name: "{{container_id}}"
     recreate: true
     restart_policy: unless-stopped
+    groups: "{{stinsel_group_id.stdout}}"
     purge_networks: true
     networks_cli_compatible: yes
     command: "{{command | default(omit) }}"

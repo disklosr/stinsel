@@ -21,7 +21,6 @@
   copy:
     src: "{{dir}}"
     dest: "{{data_dir}}"
-    mode: "600"
     force: no # Don't overwrite already existing files
   when: dir is directory
 
@@ -31,7 +30,6 @@
   copy:
     src: "{{dir}}"
     dest: "{{conf_dir}}"
-    mode: "600"
     force: no # Don't overwrite already existing files
   when: dir is directory
 
@@ -39,14 +37,27 @@
   template:
     src: "{{ item.src }}"
     dest: "{{conf_dir}}/{{ item.path }}"
-    mode: "600"
   with_filetree: conf/
   when: item.state == "file"
+
+- name: Enforce permissions
+  file:
+    dest: "{{item}}"
+    group: "stinsel"
+    mode: "g+rwX"
+    recurse: yes
+  with_items:
+    - "{{conf_dir}}"
+    - "{{data_dir}}"
 
 - name: Ensure docker network is present
   docker_network: 
     name: "{{docker_custom_network}}"
     state: present
+
+- name: Get Stinsel group id
+  shell: "getent group stinsel | cut -d: -f3"
+  register: stinsel_group_id
 
 - name: Mark pre_deploy as run
   set_fact:
