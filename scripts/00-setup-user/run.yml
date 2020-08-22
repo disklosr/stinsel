@@ -1,0 +1,51 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+  vars:
+    - random_salt: "{{ lookup('password', '/dev/null length=10 chars=ascii_letters')}}"
+
+  tasks:
+    - name: Make sure wheel group exists
+      group:
+        name: wheel
+        state: present
+
+    - name: Allow users of wheel group to use sudo
+      copy:
+        content: '%wheel ALL=(ALL:ALL) ALL'
+        dest: /etc/sudoers.d/wheel
+        mode: 0440
+
+    - name: Create main admin user
+      user:
+        name: "{{admin_username}}"
+        password: "{{ admin_password | password_hash('sha512', random_salt) }}"
+        update_password: on_create
+        groups: wheel
+        shell: /bin/bash
+
+    - name: Copy zshrc config files
+      copy:
+        src: ".zshrc"
+        dest: /home/{{admin_username}}/.zshrc
+
+    - name: Set shell to zsh
+      become: true
+      user:
+        name: "{{admin_username}}"
+        shell: /bin/zsh
+   
+    - name: Authorize ssh keys for admin user
+      authorized_key: 
+        user: "{{ admin_username }}"
+        key: '{{ item }}'
+      with_items: "{{ authorized_keys }}"
+
+    - name: Generate new ssh key pair if not present
+      openssh_keypair:
+        path: "/home/{{admin_username}}/.ssh/id_rsa"
+        owner: "{{admin_username}}"
+        force: no
+
