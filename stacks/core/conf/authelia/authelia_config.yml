@@ -111,6 +111,11 @@ access_control:
     - domain: "auth.{{domain_name}}"
       policy: bypass
 
+    - domain: "status.{{domain_name}}"
+      resources:
+        - "^/ping/.*$"
+      policy: bypass
+
     - domain: "public.{{domain_name}}"
       policy: bypass
 

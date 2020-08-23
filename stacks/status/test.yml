@@ -1,0 +1,17 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: test
+      tags: test
+      vars:
+        test_item:
+          url: "https://status.{{domain_name}}"
+          expect_status: 200
+          authenticate: true
+
+
+

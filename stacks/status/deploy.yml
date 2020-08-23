@@ -1,0 +1,29 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: deploy
+      vars:
+        image: linuxserver/healthchecks:v1.16.0-ls65
+        role_id: web
+        env:
+          REGISTRATION_OPEN: "False"
+          DB: "sqlite"
+          TELEGRAM_TOKEN: ""
+          TELEGRAM_BOT_NAME: "raigeki_bot"
+        volumes:
+          - "{{data_dir}}:/config"
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
+
+    - name: "Finish initial setup" 
+      debug:
+        msg: >-
+          If this is your first deployment, you need to
+          finish setup by running the following interactive command:
+          `docker exec -it {{stack_id}}-web python3 /app/healthchecks/manage.py createsuperuser`
+
