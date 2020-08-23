@@ -6,7 +6,6 @@
   
 
   vars:
-    ansible_port: 22
     sshd_config_file_location: "/etc/ssh/sshd_config"
 
   tasks:
