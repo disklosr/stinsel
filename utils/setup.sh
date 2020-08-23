@@ -7,8 +7,9 @@ set -e # Stop at first error
 
 echo "Setting up server $1 for first use..."
 ./utils/run.sh $1 00 --ask-pass -e "ansible_port=22" -e "ansible_user=root"
-./utils/run.sh $1 01
+./utils/run.sh $1 01 -e "ansible_port=22"
 ./utils/run.sh $1 03
 ./utils/run.sh $1 04
 ./utils/run.sh $1 05
+./utils/run.sh $1 09
 echo "Finished setting up server $1"
