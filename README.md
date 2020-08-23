@@ -18,7 +18,7 @@ I build this to help me managing my self-hosted containers across many hosts. He
 * Setup any freshly provisioned host or VPS using one single command. Ensuring it has all needed dependencies and properly securing it using sane defaults
 * The tool should be simple and minimalist. No black magic involved
 
-## What's wrong about `docker-compose` ?
+## What's wrong with `docker-compose` ?
 
 * Only deals with defining containers, which only tells half the story. You need extra steps to get your config files there before you can start your stack
 * Lack of a good templating engine
