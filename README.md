@@ -22,6 +22,10 @@ I build this to help me managing my self-hosted containers across many hosts. He
 
 ## What's wrong with `docker-compose` ?
 
+A lot of people in the self-hosting community use `docker-compose` to manage their servers and stacks. I think there are better tools one should explore, even for the simplest of self-hosting setups. Ansible is the tool I choose as an alternative and it's what `Stinsel` is based on.
+
+Here's where `docker-compose` falls short for me:
+
 * Only deals with defining containers, which only tells half the story. You need extra steps to get your config files there before you can start your stack
 * Lack of a good templating engine
 * Doesn't provide a way for securely storing secrets
