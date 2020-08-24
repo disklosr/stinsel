@@ -1,7 +1,3 @@
-# This role copies local 'conf' and 'data' folders to target host
-# All files immediately inside './conf' folder ==> {{conf_dir}} (as defined at inventory level)
-# Everything inside './data' folder ==> {{data_dir}} (as defined at inventory levels)
-
 - name: Load secret_vars file if it exists
   include_vars:
     dir: "{{playbook_dir}}"

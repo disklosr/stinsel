@@ -9,14 +9,16 @@ all:
 
     # Default values for some global internal vars
     stack_id: "{{playbook_dir | basename}}"
+    job_id: "{{playbook_dir | basename}}"
     container_id: "{{stack_id}}-{{role_id | mandatory}}"
     role_subdomain: "{{stack_id}}" #TODO: This might not be needed
     role_url: "{{role_subdomain}}.{{ domain_name }}"
 
     # Directory of a stack
     stack_base_dir: "{{stinsel_root_dir}}/{{stack_id}}"
+    job_base_dir: "{{stinsel_root_dir}}/jobs/{{job_id}}"
 
-    # Target location of 'data', 'conf' and 'meta' folder for a given stack
+    # Target location of special folders
     data_dir: "{{stack_base_dir}}/data"
     conf_dir: "{{stack_base_dir}}/conf"
     meta_dir: "{{stack_base_dir}}/meta"

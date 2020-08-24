@@ -1,0 +1,38 @@
+- name: Ensure job token is defined
+  fail:
+    msg: "Job token was not provided"
+  when: job_token | length == 0
+
+- name: Load secret_vars file if it exists
+  include_vars:
+    dir: "{{playbook_dir}}"
+    files_matching: "secure_vars.yml"
+
+- name: Ensure job folder exists on target
+  file:
+    path: "{{job_base_dir}}/scripts"
+    state: directory
+
+- name: Template then copy all config files to remote server
+  template:
+    src: "{{ item.src }}"
+    dest: "{{job_base_dir}}/scripts/{{ item.path }}"
+    mode: "700"
+  with_filetree: scripts/
+  when: item.state == "file"
+
+- name: Copy main entry file
+  template:
+    src: "run.sh"
+    dest: "{{job_base_dir}}/run.sh"
+    mode: "700"
+
+- name: Register cron
+  cron:
+    name: "{{job_id}}-{{job_token}}"
+    minute: "{{minute | default(omit)}}"
+    hour: "{{hour | default(omit)}}"
+    weekday: "{{weekday | default(omit)}}"
+    month: "{{month | default(omit)}}"
+    special_time: "{{special_time | default(omit)}}"
+    job: "{{job_base_dir}}/run.sh >> {{job_base_dir}}/logs.txt"
