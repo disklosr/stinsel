@@ -1,0 +1,14 @@
+EMAIL_HOST = "smtp.gmail.com"
+DEFAULT_FROM_EMAIL = "noreply@example.com"
+BASE_URL = "{{role_url}}"
+EMAIL_USE_TLS = True
+SITE_ROOT = "https://{{role_url}}"
+DEBUG = False
+EMAIL_PORT = "587"
+SITE_NAME = "healthchecks"
+ALLOWED_HOSTS = "*"
+EMAIL_HOST_PASSWORD = "password"
+EMAIL_HOST_USER = "username"
+ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ["{{role_url}}"]
+PING_ENDPOINT = SITE_ROOT + "/ping/"

@@ -12,10 +12,11 @@
         env:
           REGISTRATION_OPEN: "False"
           DB: "sqlite"
-          TELEGRAM_TOKEN: ""
+          TELEGRAM_TOKEN: "{{telegram_bot_token}}"
           TELEGRAM_BOT_NAME: "raigeki_bot"
         volumes:
           - "{{data_dir}}:/config"
+          - "{{conf_dir}}/local_settings.py:/config/local_settings.py"
         labels: |
           "traefik.enable": "true"
           "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
