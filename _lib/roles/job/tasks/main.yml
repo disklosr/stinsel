@@ -8,10 +8,13 @@
     dir: "{{playbook_dir}}"
     files_matching: "secure_vars.yml"
 
-- name: Ensure job folder exists on target
+- name: Ensure job folders exists on target
   file:
-    path: "{{job_base_dir}}/scripts"
+    path: "{{job_base_dir}}/{{item}}"
     state: directory
+  with_items:
+    - "scripts"
+    - "data"
 
 - name: Template then copy all config files to remote server
   template:
