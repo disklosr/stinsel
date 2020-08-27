@@ -4,7 +4,7 @@
 
 An opinionated, convention-based collection of ansible scripts to ease management of self-hosting containers and services.
 
-I use this to manage my servers and self-hosted services. I'm keeping this repo open so others can get inspiration from it while I can gather feedback from them. 
+I use this to manage my servers and self-hosted services. All my infrastructure is defined in this repository that I'm sharing publicly so others can get inspiration from it while I can gather feedback from them.
 
 ## Why did I build this?
 
