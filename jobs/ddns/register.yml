@@ -2,17 +2,11 @@
 - hosts: "{{target}}"
   become: yes
   gather_facts: no
-  
-  vars_prompt:
-    - name: provided_job_token
-      prompt: What's this job's token? 
-      private: no
-      default: ""
 
   tasks:
     - name: Register job
       vars:
-        job_token: "{{provided_job_token}}"
+        job_token: "{{host_job_tokens[job_id]}}"
         minute: "*/10"
       include_role:
         name: "job"

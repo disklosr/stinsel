@@ -1,0 +1,24 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+
+  tasks:
+    - include_role:
+        name: deploy
+      vars:
+        image: linuxserver/calibre:v4.23.0-ls75
+        role_id: web
+        volumes:
+          - "{{conf_dir}}:/config"
+          - "{{data_dir}}:/data"
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}-db.rule": "Host(`calibre-db.{{domain_name}}`)"
+          "traefik.http.routers.{{container_id}}-db.service": "{{container_id}}-db"
+          "traefik.http.services.{{container_id}}-db.loadbalancer.server.port": "8081"
+
+          "traefik.http.routers.{{container_id}}-server.rule": "Host(`{{role_url}}`)"
+          "traefik.http.routers.{{container_id}}-server.service": "{{container_id}}-server"
+          "traefik.http.services.{{container_id}}-server.loadbalancer.server.port": "8080"

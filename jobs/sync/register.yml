@@ -2,12 +2,13 @@
 - hosts: "{{target}}"
   become: yes
   gather_facts: no
-  
+
   tasks:
     - name: Register job
       vars:
         job_token: "{{host_job_tokens[job_id]}}"
-        minute: "*/30"
+        hour: "*/2"
+        minute: "0"
       include_role:
         name: "job"
 

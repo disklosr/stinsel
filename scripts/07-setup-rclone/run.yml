@@ -1,0 +1,21 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+  
+  vars_files:
+      - "secure_vars.yml"
+
+  tasks:
+    - name: Install/Update required apt packages
+      apt:
+        state: latest
+        update-cache: yes
+        cache_valid_time: 3600
+        package: "rclone"
+
+    - name: Copy config file
+      template:
+        src: "rclone.conf"
+        dest: "/root/.config/rclone/"
+        mode: "700"
