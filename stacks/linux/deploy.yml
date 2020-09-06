@@ -1,0 +1,18 @@
+---
+- hosts: "{{target}}"
+  become: yes
+  gather_facts: no
+
+  tasks:
+    - include_role:
+        name: deploy
+      vars:
+        image: accetto/ubuntu-vnc-xfce
+        role_id: web
+        labels: |
+          "traefik.enable": "true"
+          "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
+          "traefik.http.services.{{container_id}}.loadbalancer.server.port": "6901"
+
+    - debug:
+        msg: "Password is 'headless'"
