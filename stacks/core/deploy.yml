@@ -18,7 +18,7 @@
       include_role:
         name: deploy
       vars:
-        image: authelia/authelia:4.21
+        image: authelia/authelia:4.29
         role_id: authelia
         network_alias: "{{authelia_network_alias}}"
         volumes:
@@ -53,7 +53,7 @@
     - include_role:
         name: deploy
       vars:
-        image: traefik:v2.2
+        image: traefik:v2.4
         role_id: traefik
         role_subdomain: "traefik"
         env_file: "{{conf_dir}}/traefik/traefik_cloudflare.env"

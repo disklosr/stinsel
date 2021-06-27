@@ -59,7 +59,7 @@
       pip:
         name: docker
         state: latest
-
+        executable: /usr/bin/pip3
 
 
 
