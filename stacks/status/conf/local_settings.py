@@ -10,5 +10,5 @@ ALLOWED_HOSTS = "*"
 EMAIL_HOST_PASSWORD = "password"
 EMAIL_HOST_USER = "username"
 ALLOWED_HOSTS = ["*"]
-CSRF_TRUSTED_ORIGINS = ["{{role_url}}"]
+CSRF_TRUSTED_ORIGINS = ["https://{{role_url}}"]
 PING_ENDPOINT = SITE_ROOT + "/ping/"

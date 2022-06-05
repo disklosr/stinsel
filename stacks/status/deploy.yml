@@ -7,7 +7,7 @@
     - include_role:
         name: deploy
       vars:
-        image: linuxserver/healthchecks:v1.16.0-ls65
+        image: linuxserver/healthchecks:version-v2.1
         role_id: web
         env:
           REGISTRATION_OPEN: "False"
