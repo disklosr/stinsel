@@ -3,11 +3,11 @@
 ###############################################################
 
 # The host and port to listen on
-host: 0.0.0.0
-port: 9091
+
 
 # Level of verbosity for logs: info, debug, trace
-log_level: info
+log:
+  level: info
 
 # The secret used to generate JWT tokens when validating user identity by
 # email confirmation.
@@ -25,11 +25,16 @@ jwt_secret: {{authelia_jwt_secret}}
 # be redirected upon successful authentication.
 # default_redirection_url: http://example.com/
 
+server:
+  host: 0.0.0.0
+  port: 80
+
 # TOTP Issuer Name
 #
 # This will be the issuer name displayed in Google Authenticator
 # See: https://github.com/google/google-authenticator/wiki/Key-Uri-Format for more info on issuer names
 totp:
+  disable: true
   issuer: {{domain_name}}
 
 # Duo Push API
@@ -167,6 +172,10 @@ regulation:
 #
 # You must use only an available configuration: local, sql
 storage:
+  ## The encryption key that is used to encrypt sensitive information in the database. Must be a string with a minimum
+  ## length of 20. Please see the docs if you configure this with an undesirable key and need to change it.
+  encryption_key: {{authelia_storage_encryption_key}}
+  
   # The directory where the DB files will be saved
   local:
     path: /etc/authelia/data/db.sqlite3

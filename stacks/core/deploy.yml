@@ -4,7 +4,6 @@
   gather_facts: no
 
   vars:
-    authelia_network_alias: "authelia"
     traefik_auth_middleware_name: "auth"
     traefik_container_name: "{{stack_id}}-traefik"
 
@@ -18,31 +17,22 @@
       include_role:
         name: deploy
       vars:
-        image: authelia/authelia:4.29
+        image: authelia/authelia:4.35
         role_id: authelia
-        network_alias: "{{authelia_network_alias}}"
+        role_subdomain: auth
+        ports:
+          - "80"
+        #network_alias: "{{authelia_network_alias}}"
         volumes:
           - "{{data_dir}}/authelia:/etc/authelia/data"
           - "{{conf_dir}}/authelia/authelia_config.yml:/config/configuration.yml:ro"
           - "{{conf_dir}}/authelia/authelia_users_db.yml:/etc/authelia/users_db.yml:ro"
         labels: |
-          "traefik.enable": "false"
-
-    - name: deploy authelia SSO proxy
-      include_role:
-        name: deploy
-      vars:
-        image: nginx
-        role_id: sso-proxy
-        role_subdomain: auth
-        volumes:
-          - "{{conf_dir}}/authelia/authelia_nginx.conf:/etc/nginx/nginx.conf:ro"
-        labels: |
           "traefik.enable": "true"
           "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
           "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.address": "http://{{container_id}}/api/verify?rd=https://{{role_url}}/"
           "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.trustforwardheader": "true"
-          "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.authresponseheaders": "X-Forwarded-User"
+          "traefik.http.middlewares.{{traefik_auth_middleware_name}}.forwardauth.authresponseheaders": "X-Forwarded-User, Remote-User, Remote-Groups, Remote-Name, Remote-Email"
 
     - name: Set correct permissions on acme.json file
       file:
@@ -53,7 +43,7 @@
     - include_role:
         name: deploy
       vars:
-        image: traefik:v2.4
+        image: traefik:v2.5
         role_id: traefik
         role_subdomain: "traefik"
         env_file: "{{conf_dir}}/traefik/traefik_cloudflare.env"
