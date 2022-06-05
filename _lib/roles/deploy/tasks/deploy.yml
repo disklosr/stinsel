@@ -16,6 +16,7 @@
   vars:
     full_labels: |
       {{labels | default('')}}
+      "stinsel.stack.url": "{{role_url}}"
       "stinsel.stack.id": "{{stack_id}}"
       "stinsel.stack.basedir": "{{stack_base_dir}}"
   docker_container:
@@ -27,6 +28,7 @@
     networks_cli_compatible: yes
     command: "{{command | default(omit) }}"
     image: "{{ image }}"
+    capabilities: "{{ capabilities | default(omit) }}"
     pid_mode: "{{ pid_mode | default(omit) }}"
     tty: "{{tty | default(omit)}}"
     published_ports: "{{ ports | default(omit) }}"
