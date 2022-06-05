@@ -12,6 +12,7 @@
         role_id: web
         volumes:
           - "{{data_dir}}/:/mnt/fs"
+          - "/{{stinsel_root_dir}}:/mnt/stinsel"
         labels: |
           "traefik.enable": "true"
           "traefik.http.routers.{{container_id}}.rule": "Host(`{{role_url}}`)"
